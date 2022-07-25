@@ -1,0 +1,7 @@
+appPort: 38080
+bootstrapServers: localhost:1092
+chuckClientId: chuck-java-producer
+chuckTopic: chuck-java-topic
+chuckAvroClientId: chuck-java-avro-producer
+chuckAvroTopic: chuck-java-avro-topic
+schemaRegistryUrl: http://localhost:8081
