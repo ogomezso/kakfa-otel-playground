@@ -11,12 +11,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class ChuckService implements ChuckAdapter {
 
   private final ChuckFactPort chuckFactPort = new ChuckFactService();
-  private final AppConfig appConfig;
   private final ChuckProducer producer;
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   public ChuckService(AppConfig appConfig) {
-    this.appConfig = appConfig;
     this.producer = new ChuckProducer(appConfig);
   }
 
@@ -25,12 +23,6 @@ public class ChuckService implements ChuckAdapter {
     ChuckFact fact = chuckFactPort.buildFact();
     String message = objectMapper.writeValueAsString(fact);
     producer.produceJsonMessage(message);
-    return fact;
-  }
-
-  @Override
-  public ChuckFact SendAvroFact() {
-    ChuckFact fact = chuckFactPort.buildFact();
     return fact;
   }
 }

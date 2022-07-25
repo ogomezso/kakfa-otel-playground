@@ -7,6 +7,4 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 public interface ChuckAdapter {
 
   ChuckFact sendFact() throws JsonProcessingException;
-
-  ChuckFact SendAvroFact();
 }

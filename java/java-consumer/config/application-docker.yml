@@ -3,6 +3,7 @@ bootstrapServers: broker:29092
 chuckClientId: chuck-java-consumer
 chuckGroupId: chuck-java-cg
 chuckTopic: chuck-java-topic
-chuckAvroClientId: chuck-java-avro-consumer
-chuckAvroTopic: chuck-java-avro-topic
+wordCountClientId: word-cound-id
+wordCountTopic: word-count
+wordCountGroupId: word-count-cg
 schemaRegistryUrl: http://schema-registry:8081

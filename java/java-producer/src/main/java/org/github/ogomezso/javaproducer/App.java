@@ -26,10 +26,5 @@ public class App {
       res.header("Content-Type", "application/json");
       return controller.sendFact();
     });
-    post("/chuck-says/avro", (req, res) -> {
-      log.info("Avro request received");
-      return controller.sendAvroFact();
-    });
-
   }
 }

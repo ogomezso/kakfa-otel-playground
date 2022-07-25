@@ -143,12 +143,6 @@ services:
     volumes:
       - ./monitoring/assets/grafana/provisioning/:/etc/grafana/provisioning
 
-  # zipkin
-  zipkin:
-    image: openzipkin/zipkin:latest
-    ports:
-      - "9411:9411"
-
   # Jaeger
   jaeger:
    image: jaegertracing/all-in-one:latest
@@ -224,6 +218,22 @@ services:
         OTEL_VERSION: 1.15.0 
         PROMETHEUS_AGENT_VERSION: 0.17.0 
         APP_NAME: java-consumer 
+        COLLECTOR_ENDPOINT: http://collector:4317  
+    volumes:
+      - ./shared-assets/jmx-exporter/:/usr/share/jmx-exporter 
+    depends_on:
+      - broker
+      - schema-registry
+      - collector  
+
+  kstreams: 
+    build:
+      context: ../java/kstreams
+      dockerfile: Dockerfile 
+      args: 
+        OTEL_VERSION: 1.15.0 
+        PROMETHEUS_AGENT_VERSION: 0.17.0 
+        APP_NAME: kstreams 
         COLLECTOR_ENDPOINT: http://collector:4317  
     volumes:
       - ./shared-assets/jmx-exporter/:/usr/share/jmx-exporter 

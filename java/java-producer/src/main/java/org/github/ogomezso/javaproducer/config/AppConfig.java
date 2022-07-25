@@ -10,8 +10,4 @@ public class AppConfig {
    private String bootstrapServers;
    private String chuckClientId;
    private String chuckTopic;
-   private String chuckAvroClientId;
-   private String chuckAvroTopic;
-   private String schemaRegistryUrl;
-   private final ObjectMapper objectMapper = new ObjectMapper();
 }

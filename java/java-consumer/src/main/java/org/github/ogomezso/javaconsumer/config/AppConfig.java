@@ -1,7 +1,5 @@
 package org.github.ogomezso.javaconsumer.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import lombok.Data;
 
 @Data
@@ -11,8 +9,8 @@ public class AppConfig {
    private String chuckClientId;
    private String chuckGroupId;
    private String chuckTopic;
-   private String chuckAvroClientId;
-   private String chuckAvroTopic;
+   private String wordCountClientId;
+   private String wordCountTopic;
+   private String wordCountGroupId;
    private String schemaRegistryUrl;
-   private final ObjectMapper objectMapper = new ObjectMapper();
 }

@@ -6,17 +6,17 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.github.ogomezso.javaconsumer.config.AppConfig;
 
-public class ChuckConsumer {
+public class WorkCountConsumer {
 
-  private final KafkaConsumer<String, String> plainConsumer;
+  private final KafkaConsumer<String, Long> workCountConsumer;
 
-  public ChuckConsumer(AppConfig appConfig) {
-    this.plainConsumer = KafkaConfig.createChuckKafkaConsumer(appConfig);
+  public WorkCountConsumer(AppConfig appConfig) {
+    this.workCountConsumer = KafkaConfig.createWordCountConsumer(appConfig);
   }
 
   public void pollMessage() {
     while (true) {
-      final ConsumerRecords<String, String> consumerRecords = plainConsumer.poll(Duration.ofMillis(500));
+      final ConsumerRecords<String, Long> consumerRecords = workCountConsumer.poll(Duration.ofMillis(500));
 
       consumerRecords.forEach(record -> {
         System.out.printf("Consumer Record:(%d, %s, %d, %d)\n",

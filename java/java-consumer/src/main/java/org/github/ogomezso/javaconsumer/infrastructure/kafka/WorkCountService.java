@@ -2,12 +2,12 @@ package org.github.ogomezso.javaconsumer.infrastructure.kafka;
 
 import org.github.ogomezso.javaconsumer.config.AppConfig;
 
-public class ChuckService implements ConsumerAdapter {
+public class WorkCountService implements ConsumerAdapter {
 
-  private final ChuckConsumer consumer;
+  private final WorkCountConsumer consumer;
 
-  public ChuckService(AppConfig appConfig) {
-    this.consumer = new ChuckConsumer(appConfig);
+  public WorkCountService(AppConfig appConfig) {
+    this.consumer = new WorkCountConsumer(appConfig);
   }
 
   @Override
