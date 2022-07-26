@@ -79,6 +79,27 @@ You can send a request to java producer endpoint with:
 curl -X POST http://localhost:38080/chuck-says
 ```
 
+#### Kstream Wordcount
+
+Kstream Application that consumes `chuck-java-topic`extract the fact from the message and count words.
+
+As always the app is being instrumented with the OpenTelemetry Java Agent
+
 ### Java Consumer
 
-In this moment `java-consumer`will start to consume it and now you can go to [Jaeger UI](http://localhost:16686/) to watch your traces.
+Plain Java Kafka Consumer App that consume from both `chuck-java-topic` and `word-count` topics.
+
+On the  [Jaeger UI](http://localhost:16686/) you will see that `java-consumer` will produce two different spams with the same parent, the `java-producer`, one for `chuck-java-topic` (that comes directly from producer) and another one for `word-count` containing the extra hop of Kafka Streams Application.
+
+
+> DISCLAIMER: Due the fact that neither Connect or KStreams doesn't store the headers you will see that internal spams will be not correlated as we wished. 
+
+### Next Steps
+
+As automatic instrumentation does not work with KStreams and connect, we will try with manual instrumentation. 
+
+Add more signals (metrics and logs) to the OTEL Collector.
+
+Try Elastic Stack as backend of all the signals.
+
+Try another backends and implementations (Pixie,...)

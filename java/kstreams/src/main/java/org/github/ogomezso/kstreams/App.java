@@ -15,7 +15,8 @@ public class App {
         ConfigHandler configHandler = new ConfigHandler();
         AppConfig appConfig = configHandler.getAppConfig(args[0]);
 
-        StreamsBuilder builder = WordCountTopologyBuilder.createWordCountTopology(appConfig);
+        WordCountTopologyBuilder wordCountTopologyBuilder = new WordCountTopologyBuilder();
+        StreamsBuilder builder = wordCountTopologyBuilder.createWordCountTopology(appConfig);
         final KafkaStreams streams = new KafkaStreams(builder.build(),
         KafkaConfig.createStreamsConfigProperties("wordcount", appConfig));
         streams.cleanUp();

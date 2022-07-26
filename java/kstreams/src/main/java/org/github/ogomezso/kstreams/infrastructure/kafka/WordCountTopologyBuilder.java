@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class WordCountTopologyBuilder {
 
-    public static StreamsBuilder createWordCountTopology(AppConfig appConfig) {
+    public  StreamsBuilder createWordCountTopology(AppConfig appConfig) {
         final StreamsBuilder builder = new StreamsBuilder();
         final KStream<String, String> textLines = builder.stream(appConfig.getInputTopic());
 
@@ -30,7 +30,7 @@ public class WordCountTopologyBuilder {
         return builder;
     }
 
-    private static String extractFactFromValue(String value) {
+    private String extractFactFromValue(String value) {
         ObjectMapper mapper = new ObjectMapper();
         ChuckFact fact = null;
         try {
