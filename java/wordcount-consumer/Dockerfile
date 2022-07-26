@@ -24,7 +24,7 @@ RUN mvn -f $APP_HOME/pom.xml clean package
 # App ############################################
 FROM adoptopenjdk/openjdk11:ubi  
 
-COPY --from=builder $APP_HOME/target/java-producer-jar-with-dependencies.jar app.jar
+COPY --from=builder $APP_HOME/target/wordcount-consumer-jar-with-dependencies.jar app.jar
 COPY --from=builder $APP_HOME/config/application-docker.yml application-docker.yml
 
 COPY --from=builder $APP_HOME/jmx_prometheus_javaagent.jar jmx_prometheus_javaagent.jar
@@ -35,7 +35,7 @@ EXPOSE 38080
 EXPOSE 5000 
 
 ARG COLLECTOR_ENDPOINT="http://collector:4317"
-ARG APP_NAME="java-producer"  
+ARG APP_NAME="wordcount-consumer"  
 
 ENV JAVA_TOOL_OPTIONS "-Dcom.sun.management.jmxremote.ssl=false \
   -Dcom.sun.management.jmxremote.authenticate=false \
@@ -43,7 +43,6 @@ ENV JAVA_TOOL_OPTIONS "-Dcom.sun.management.jmxremote.ssl=false \
   -Dcom.sun.management.jmxremote.rmi.port=5000 \
   -Dcom.sun.management.jmxremote.host=0.0.0.0 \
   -Djava.rmi.server.hostname=0.0.0.0 \
-  -Dspring.profiles.active=docker \
   -javaagent:jmx_prometheus_javaagent.jar=1234:/usr/share/jmx-exporter/kafka_client.yml \
   -javaagent:opentelemetry-javaagent.jar \
   -Dotel.traces.exporter=otlp \

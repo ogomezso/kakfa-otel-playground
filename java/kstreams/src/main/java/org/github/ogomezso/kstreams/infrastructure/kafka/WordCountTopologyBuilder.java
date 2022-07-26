@@ -20,7 +20,7 @@ public class WordCountTopologyBuilder {
         final KStream<String, String> textLines = builder.stream(appConfig.getInputTopic());
 
         KStream<String, Long> wordCount = textLines
-        .flatMapValues(value -> List.of(extractFactFromValue(value).toLowerCase().split("\\W+")))
+        .flatMapValues(value -> List.of(extractFactFromValue(value).toLowerCase().split(" ")))
         .groupBy((key, value) -> value)
         .count(Materialized.as("WordCount"))
         .toStream();

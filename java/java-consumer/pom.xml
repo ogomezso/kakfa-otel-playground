@@ -62,7 +62,7 @@
         <artifactId>maven-jar-plugin</artifactId>
         <version>2.4</version>
         <configuration>
-          <finalName>java-client</finalName>
+          <finalName>java-consumer</finalName>
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
@@ -90,7 +90,7 @@
             </goals>
             <phase>package</phase>
             <configuration>
-              <finalName>java-client</finalName>
+              <finalName>java-consumer</finalName>
               <descriptorRefs>
                 <descriptorRef>jar-with-dependencies</descriptorRef>
               </descriptorRefs>

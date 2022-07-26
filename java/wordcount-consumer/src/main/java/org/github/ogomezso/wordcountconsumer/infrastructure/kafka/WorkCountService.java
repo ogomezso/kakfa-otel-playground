@@ -1,6 +1,6 @@
-package org.github.ogomezso.javaconsumer.infrastructure.kafka;
+package org.github.ogomezso.wordcountconsumer.infrastructure.kafka;
 
-import org.github.ogomezso.javaconsumer.config.AppConfig;
+import org.github.ogomezso.wordcountconsumer.config.AppConfig;
 
 public class WorkCountService implements ConsumerAdapter {
 

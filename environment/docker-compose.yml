@@ -1,7 +1,7 @@
 version: '3.9'
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:7.1.0 
+    image: confluentinc/cp-zookeeper:7.2.0 
     ports:
       - "2181:2181"
       - "9999:9999"
@@ -15,7 +15,7 @@ services:
       - ./shared-assets/jmx-exporter/:/usr/share/jmx-exporter
    
   broker:
-    image: confluentinc/cp-server:7.1.0 
+    image: confluentinc/cp-server:7.2.0 
     depends_on:
       - zookeeper
     ports:
@@ -45,7 +45,7 @@ services:
       - ./shared-assets/jmx-exporter/:/usr/share/jmx-exporter
 
   schema-registry:
-    image: confluentinc/cp-schema-registry:7.1.0 
+    image: confluentinc/cp-schema-registry:7.2.0 
     depends_on:
       - broker
     ports:
@@ -59,7 +59,7 @@ services:
       - ./shared-assets/jmx-exporter/:/usr/share/jmx-exporter
 
   connect:
-    image: confluentinc/cp-server-connect-otel:7.1.2
+    image: confluentinc/cp-server-connect-otel:7.2.0
     build:
       context: ../connect
       dockerfile: Dockerfile 
@@ -97,7 +97,7 @@ services:
       CONNECT_LOG4J_LOGGERS: org.apache.zookeeper=ERROR,org.I0Itec.zkclient=ERROR,org.reflections=ERROR 
 
   control-center:
-    image: confluentinc/cp-enterprise-control-center:7.1.0 
+    image: confluentinc/cp-enterprise-control-center:7.2.0 
     depends_on:
       - broker
       - schema-registry
@@ -143,6 +143,12 @@ services:
     volumes:
       - ./monitoring/assets/grafana/provisioning/:/etc/grafana/provisioning
 
+  zipkin:
+    image: openzipkin/zipkin:latest
+    ports:
+      - "9411:9411"
+    environment:
+      JAVA_OPTS: -Xms1g -Xmx1g -XX:+ExitOnOutOfMemoryError
   # Jaeger
   jaeger:
    image: jaegertracing/all-in-one:latest
@@ -188,7 +194,6 @@ services:
     depends_on:
      - collector  
      - broker 
-     - zipkin
      - connect
 
   #java producer
@@ -223,9 +228,9 @@ services:
       - ./shared-assets/jmx-exporter/:/usr/share/jmx-exporter 
     depends_on:
       - broker
+      - java-producer
       - schema-registry
       - collector  
-
   kstreams: 
     build:
       context: ../java/kstreams
@@ -239,5 +244,22 @@ services:
       - ./shared-assets/jmx-exporter/:/usr/share/jmx-exporter 
     depends_on:
       - broker
+      - java-producer
+      - schema-registry
+      - collector
+  wordcount-consumer: 
+    build:
+      context: ../java/wordcount-consumer
+      dockerfile: Dockerfile 
+      args: 
+        OTEL_VERSION: 1.15.0 
+        PROMETHEUS_AGENT_VERSION: 0.17.0 
+        APP_NAME: wordcount-consumer 
+        COLLECTOR_ENDPOINT: http://collector:4317  
+    volumes:
+      - ./shared-assets/jmx-exporter/:/usr/share/jmx-exporter 
+    depends_on:
+      - broker
+      - kstreams
       - schema-registry
       - collector  

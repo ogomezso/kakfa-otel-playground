@@ -1,4 +1,4 @@
-FROM confluentinc/cp-server-connect:7.1.2 
+FROM confluentinc/cp-server-connect:7.2.0 
 USER root
 # Install connectors 
 RUN confluent-hub install --no-prompt confluentinc/kafka-connect-datagen:0.5.2

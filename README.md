@@ -65,7 +65,7 @@ In the very moment the environment is running you will have traces available on 
 
 > WARNING: Is possible that go-consumer starts before broker is properly running with the consequent error on the app, if that is the case just restart the go-consumer by running `docker compose restart go-consumer`
 
-#### Java Producer
+#### Java Producer/Consumer
 
 Plain Java Kafka client application.
 
@@ -78,21 +78,21 @@ You can send a request to java producer endpoint with:
 ```sh
 curl -X POST http://localhost:38080/chuck-says
 ```
-
+`java-consumer` will consume it immediately so you can start to watch traces on [Jaeger UI](http://localhost:16686/)  under `java-consumer` and `java-producer` services. 
 #### Kstream Wordcount
 
 Kstream Application that consumes `chuck-java-topic`extract the fact from the message and count words.
 
 As always the app is being instrumented with the OpenTelemetry Java Agent
 
-### Java Consumer
+### Word Count Consumer
 
 Plain Java Kafka Consumer App that consume from both `chuck-java-topic` and `word-count` topics.
 
-On the  [Jaeger UI](http://localhost:16686/) you will see that `java-consumer` will produce two different spams with the same parent, the `java-producer`, one for `chuck-java-topic` (that comes directly from producer) and another one for `word-count` containing the extra hop of Kafka Streams Application.
+On the  [Jaeger UI](http://localhost:16686/) you will see that `wordcount-consumer` will contain the consume spams and `java-producer` the production ones (see disclaimers)
 
 
-> DISCLAIMER: Due the fact that neither Connect or KStreams doesn't store the headers you will see that internal spams will be not correlated as we wished. 
+> DISCLAIMER: Due the fact that neither Connect or KStreams doesn't store the headers you will see that internal spams will be not correlated as we wished, so we will have splitted traces for production and consume. 
 
 ### Next Steps
 

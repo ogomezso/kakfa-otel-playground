@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.example</groupId>
-  <artifactId>java-producer</artifactId>
+  <artifactId>wordcount-consumer</artifactId>
   <version>1.0-SNAPSHOT</version>
   <repositories>
     <repository>
@@ -14,8 +14,8 @@
   <properties>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
-    <kafka.version>3.2.0</kafka.version>
     <avro.version>1.11.0</avro.version>
+    <kafka.version>3.2.0</kafka.version>
   </properties>
   <dependencies>
     <dependency>
@@ -54,12 +54,6 @@
       <groupId>org.apache.kafka</groupId>
       <version>${kafka.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-api</artifactId>
-      <version>5.7.2</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -68,11 +62,11 @@
         <artifactId>maven-jar-plugin</artifactId>
         <version>2.4</version>
         <configuration>
-          <finalName>java-producer</finalName>
+          <finalName>wordcount-consumer</finalName>
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
-              <mainClass>org.github.ogomezso.javaproducer.App</mainClass>
+              <mainClass>org.github.ogomezso.wordcountconsumer.App</mainClass>
               <classpathPrefix>dependency-jars/</classpathPrefix>
             </manifest>
           </archive>
@@ -96,13 +90,13 @@
             </goals>
             <phase>package</phase>
             <configuration>
-              <finalName>java-producer</finalName>
+              <finalName>wordcount-consumer</finalName>
               <descriptorRefs>
                 <descriptorRef>jar-with-dependencies</descriptorRef>
               </descriptorRefs>
               <archive>
                 <manifest>
-                  <mainClass>org.github.ogomezso.javaproducer.App</mainClass>
+                  <mainClass>org.github.ogomezso.wordcountconsumer.App</mainClass>
                 </manifest>
               </archive>
             </configuration>
