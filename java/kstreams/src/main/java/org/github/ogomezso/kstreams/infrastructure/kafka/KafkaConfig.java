@@ -26,6 +26,7 @@ public class KafkaConfig {
             StreamsConfig.STATE_DIR_CONFIG, appConfig.getProcessingGuaranteeConfig());
         streamsConfiguration.put(
             StreamsConfig.PROCESSING_GUARANTEE_CONFIG, appConfig.getProcessingGuaranteeConfig());
+        streamsConfiguration.put(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, "0");
     
         return streamsConfiguration;
       }

@@ -17,7 +17,7 @@ RUN wget https://github.com/open-telemetry/opentelemetry-java-instrumentation/re
 RUN wget https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/${PROMETHEUS_AGENT_VERSION}/jmx_prometheus_javaagent-${PROMETHEUS_AGENT_VERSION}.jar -O jmx_prometheus_javaagent.jar
 
 COPY lineage-opentel-extensions-0.0.1-SNAPSHOT-all.jar $APP_HOME
-COPY tmp $APP_HOME/tmp
+#COPY tmp $APP_HOME/tmp
 COPY src $APP_HOME/src
 COPY config $APP_HOME/config
 COPY pom.xml $APP_HOME
@@ -32,7 +32,7 @@ COPY --from=builder $APP_HOME/config/application-docker.yml application-docker.y
 
 COPY --from=builder $APP_HOME/jmx_prometheus_javaagent.jar jmx_prometheus_javaagent.jar
 COPY --from=builder $APP_HOME/opentelemetry-javaagent.jar opentelemetry-javaagent.jar
-COPY --from=builder $APP_HOME/opentelemetry-javaagent.jar lineage-opentel-extensions-0.0.1-SNAPSHOT-all.jar
+COPY --from=builder $APP_HOME/lineage-opentel-extensions-0.0.1-SNAPSHOT-all.jar lineage-opentel-extensions-0.0.1-SNAPSHOT-all.jar
 
 EXPOSE 38080
   
@@ -51,6 +51,7 @@ ENV JAVA_TOOL_OPTIONS "-javaagent:opentelemetry-javaagent.jar \
   -Devent.lineage.header-capture-whitelist=kstreams_header,system_id \
   -Devent.lineage.header-propagation-whitelist=kstreams_header,system_id \
   -Devent.lineage.header-charset=UTF-8 \
-  -Dotel.instrumentation.common.experimental.suppress-messaging-receive-spans=true"
+  -Dotel.instrumentation.common.experimental.suppress-messaging-receive-spans=true \
+  -Dotel.javaagent.debug=true"
 
 CMD ["java", "-jar", "app.jar","application-docker.yml"]
