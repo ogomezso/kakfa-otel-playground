@@ -1,4 +1,0 @@
-bootstrapServers: localhost:1092
-chuckClientId: chuck-java-consumer
-chuckGroupId: chuck-java-cg
-chuckTopic: chuck-java-topic

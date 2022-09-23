@@ -5,9 +5,9 @@ import static org.apache.kafka.clients.consumer.ConsumerConfig.CLIENT_ID_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG;
+import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Properties;
 
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -27,6 +27,7 @@ public class KafkaConfig {
     props.put(BOOTSTRAP_SERVERS_CONFIG, appConfig.getBootstrapServers());
     props.put(CLIENT_ID_CONFIG, appConfig.getWordCountClientId());
     props.put(GROUP_ID_CONFIG, appConfig.getWordCountGroupId());
+    props.put(AUTO_OFFSET_RESET_CONFIG, appConfig.getAutoOffsetReset());
     props.put(KEY_DESERIALIZER_CLASS_CONFIG, DESERIALIZATION_STRING_DESERIALIZER);
     props.put(VALUE_DESERIALIZER_CLASS_CONFIG, DESERIALIZATION_LONG_DESERIALIZER);
 

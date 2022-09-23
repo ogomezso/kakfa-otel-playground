@@ -1,0 +1,5 @@
+bootstrapServers: localhost:9092
+inputTopic: chuck-fact-topic
+outputTopic: chuck-wordcount-topic
+tempStateDir: ./tmp
+processingGuaranteeConfig: exactly_once_v2

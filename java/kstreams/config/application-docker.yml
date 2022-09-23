@@ -1,5 +1,0 @@
-bootstrapServers: broker:29092
-inputTopic: chuck-java-topic
-outputTopic: word-count
-tempStateDir: $APP_HOME/tmp
-processingGuaranteeConfig: exactly_once_v2

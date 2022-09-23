@@ -1,0 +1,5 @@
+bootstrapServers: broker:29092
+inputTopic: chuck-fact-topic
+outputTopic: chuck-wordcount-topic
+tempStateDir: $APP_HOME/tmp
+processingGuaranteeConfig: exactly_once_v2

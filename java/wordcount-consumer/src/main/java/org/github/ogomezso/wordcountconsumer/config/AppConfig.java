@@ -8,4 +8,5 @@ public class AppConfig {
    private String wordCountClientId;
    private String wordCountTopic;
    private String wordCountGroupId;
+   private String autoOffsetReset;
 }

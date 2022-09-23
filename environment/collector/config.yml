@@ -17,8 +17,9 @@ exporters:
     format: proto
 
   jaeger:
-    endpoint: jaeger:14250 
-    insecure: true
+    endpoint: jaeger:14250
+    tls:
+      insecure: true
 
 processors:
   batch:

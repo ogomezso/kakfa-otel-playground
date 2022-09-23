@@ -1,5 +1,0 @@
-bootstrapServers: localhost:1092
-inputTopic: ratings
-outputTopic: word-count
-tempStateDir: /Users/ogomezsoriano/projects/playgrounds/kafka-otel-playground/environment/tmp
-processingGuaranteeConfig: exactly_once_v2

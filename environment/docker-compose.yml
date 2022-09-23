@@ -1,7 +1,7 @@
 version: '3.9'
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:7.2.0 
+    image: confluentinc/cp-zookeeper:7.2.1 
     ports:
       - "2181:2181"
       - "9999:9999"
@@ -15,7 +15,7 @@ services:
       - ./shared-assets/jmx-exporter/:/usr/share/jmx-exporter
    
   broker:
-    image: confluentinc/cp-server:7.2.0 
+    image: confluentinc/cp-server:7.2.1 
     depends_on:
       - zookeeper
     ports:
@@ -27,6 +27,8 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
       KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
+      KAFKA_MIN_INSYNC_REPLICAS: 1
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 1
@@ -45,7 +47,7 @@ services:
       - ./shared-assets/jmx-exporter/:/usr/share/jmx-exporter
 
   schema-registry:
-    image: confluentinc/cp-schema-registry:7.2.0 
+    image: confluentinc/cp-schema-registry:7.2.1 
     depends_on:
       - broker
     ports:
@@ -59,7 +61,7 @@ services:
       - ./shared-assets/jmx-exporter/:/usr/share/jmx-exporter
 
   connect:
-    image: confluentinc/cp-server-connect-otel:7.2.0
+    image: confluentinc/cp-server-connect-otel:7.2.1
     build:
       context: ../connect
       dockerfile: Dockerfile 
@@ -96,18 +98,43 @@ services:
       CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
       CONNECT_LOG4J_LOGGERS: org.apache.zookeeper=ERROR,org.I0Itec.zkclient=ERROR,org.reflections=ERROR 
 
-  control-center:
-    image: confluentinc/cp-enterprise-control-center:7.2.0 
+  ksqldb:
+    image: confluentinc/cp-ksqldb-server:7.2.1
+    hostname: ksqldb
+    container_name: ksqldb
     depends_on:
       - broker
       - schema-registry
-      - connect
+      # - connect
+    ports:
+      - "8088:8088"
+    environment:
+      KSQL_CONFIG_DIR: "/etc/ksql"
+      KSQL_BOOTSTRAP_SERVERS: "broker:29092"
+      KSQL_HOST_NAME: ksqldb
+      KSQL_LISTENERS: "http://0.0.0.0:8088"
+      KSQL_CACHE_MAX_BYTES_BUFFERING: 0
+      KSQL_KSQL_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
+      KSQL_PRODUCER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor"
+      KSQL_CONSUMER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor"
+      KSQL_KSQL_CONNECT_URL: "http://connect:8083"
+      KSQL_KSQL_INTERNAL_TOPIC_REPLICAS: 1
+      KSQL_KSQL_LOGGING_PROCESSING_TOPIC_REPLICATION_FACTOR: 1
+      KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: 'true'
+      KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: 'true'
+
+  control-center:
+    image: confluentinc/cp-enterprise-control-center:7.2.1 
+    depends_on:
+      - broker
+      - schema-registry
+      # - connect
     ports:
       - "9021:9021"
     environment:
       CONTROL_CENTER_BOOTSTRAP_SERVERS: 'broker:29092'
       CONTROL_CENTER_CONNECT_CONNECT-DEFAULT_CLUSTER: 'connect:8083'
-      CONTROL_CENTER_KSQL_KSQLDB1_URL: "http://ksqldb-server:8088"
+      CONTROL_CENTER_KSQL_KSQLDB1_URL: "http://ksqldb:8088"
       CONTROL_CENTER_KSQL_KSQLDB1_ADVERTISED_URL: "http://localhost:8088"
       CONTROL_CENTER_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
       CONTROL_CENTER_REPLICATION_FACTOR: 1
@@ -184,7 +211,7 @@ services:
     depends_on:
      - collector
      - broker
-     - connect
+     # - connect
 
   #go-consumer
   go-consumer: 
@@ -194,17 +221,17 @@ services:
     depends_on:
      - collector  
      - broker 
-     - connect
+     # - connect
 
   #java producer
-  java-producer: 
+  fact-producer: 
     build:
-      context: ../java/java-producer
+      context: ../java/fact-producer
       dockerfile: Dockerfile 
       args: 
         OTEL_VERSION: 1.15.0 
         PROMETHEUS_AGENT_VERSION: 0.17.0
-        APP_NAME: java-producer 
+        APP_NAME: chuck-fact-producer 
         COLLECTOR_ENDPOINT: http://collector:4317    
     ports:
       - "38080:38080"
@@ -215,36 +242,36 @@ services:
       - schema-registry
       - collector  
   #java consumer
-  java-consumer: 
+  fact-consumer: 
     build:
-      context: ../java/java-consumer
+      context: ../java/fact-consumer
       dockerfile: Dockerfile 
       args: 
         OTEL_VERSION: 1.15.0 
         PROMETHEUS_AGENT_VERSION: 0.17.0 
-        APP_NAME: java-consumer 
+        APP_NAME: chuck-fact-consumer 
         COLLECTOR_ENDPOINT: http://collector:4317  
     volumes:
       - ./shared-assets/jmx-exporter/:/usr/share/jmx-exporter 
     depends_on:
       - broker
-      - java-producer
+      - fact-producer
       - schema-registry
       - collector  
-  kstreams: 
+  fact-wordcount-kstream: 
     build:
-      context: ../java/kstreams
+      context: ../java/fact-wordcount-kstream
       dockerfile: Dockerfile 
       args: 
         OTEL_VERSION: 1.15.0 
         PROMETHEUS_AGENT_VERSION: 0.17.0 
-        APP_NAME: kstreams 
+        APP_NAME: fact-wordcount-kstream 
         COLLECTOR_ENDPOINT: http://collector:4317  
     volumes:
       - ./shared-assets/jmx-exporter/:/usr/share/jmx-exporter 
     depends_on:
       - broker
-      - java-producer
+      - fact-producer
       - schema-registry
       - collector
   wordcount-consumer: 
@@ -254,12 +281,42 @@ services:
       args: 
         OTEL_VERSION: 1.15.0 
         PROMETHEUS_AGENT_VERSION: 0.17.0 
-        APP_NAME: wordcount-consumer 
+        APP_NAME: wordcount-consumer
         COLLECTOR_ENDPOINT: http://collector:4317  
     volumes:
       - ./shared-assets/jmx-exporter/:/usr/share/jmx-exporter 
     depends_on:
       - broker
-      - kstreams
+      - fact-wordcount-kstream
       - schema-registry
-      - collector  
+      - collector 
+  fact-stats-java: 
+    build:
+      context: ../java/fact-stats-java
+      dockerfile: Dockerfile 
+      args: 
+        OTEL_VERSION: 1.15.0 
+        PROMETHEUS_AGENT_VERSION: 0.17.0 
+        APP_NAME: fact-stats
+        COLLECTOR_ENDPOINT: http://collector:4317  
+    volumes:
+      - ./shared-assets/jmx-exporter/:/usr/share/jmx-exporter 
+    depends_on:
+      - broker
+      - schema-registry
+      - collector 
+  stats-consumer: 
+    build:
+      context: ../java/stats-consumer
+      dockerfile: Dockerfile 
+      args: 
+        OTEL_VERSION: 1.15.0 
+        PROMETHEUS_AGENT_VERSION: 0.17.0 
+        APP_NAME: stats-consumer
+        COLLECTOR_ENDPOINT: http://collector:4317  
+    volumes:
+      - ./shared-assets/jmx-exporter/:/usr/share/jmx-exporter 
+    depends_on:
+      - broker
+      - schema-registry
+      - collector 

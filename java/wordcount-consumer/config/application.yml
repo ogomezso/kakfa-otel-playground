@@ -1,3 +1,5 @@
-wordCountClientId: word-cound-id
-wordCountTopic: word-count
-wordCountGroupId: word-count-cg
+bootstrapServers: localhost:9092
+wordCountClientId: wordcount-id
+wordCountGroupId: wordcount-cg
+wordCountTopic: chuck-wordcount-topic
+autoOffsetReset: earliest
