@@ -20,6 +20,7 @@ After run the env you will have available:
  - Connect API: http://localhost:8083
  - Schema Registry API: http://localhost:8081
  - Control Center: http://localhost:9021
+ - KsqlDB: via Control Center
  - Jaeger UI: http://localhost:16686/
 
 ### Environment Stack
@@ -33,7 +34,8 @@ Docker compose provides:
 1 Kafka Broker
 1 Schema Registry
 1 Kafka Connect suite with `Datagen` and `http-sink` connectors
-1 Control Center  
+1 Control Center
+1 Ksql
 ~~~
 
 #### Open Telemetry Collector
@@ -139,6 +141,10 @@ SELECT id as FACT_ID,
     SPLIT(FROM_BYTES(traceparent, 'ascii'), '-')[3] as SPAN_ID,
     'STATS' as APP
     FROM CHUCK_STATS_TRACED;
+
+
+
+SELECT TRACE_ID, COLLECT_LIST(AS_MAP(ARRAY['ID','APP','SPAN_ID'], ARRAY[FACT_ID, APP, SPAN_ID])) AS TRACE FROM CHUCK_TRACING GROUP BY TRACE_ID EMIT CHANGES;
 
 CREATE TABLE CHUCK_TRACE_TABLE WITH (KAFKA_TOPIC='chuck-trace-table', VALUE_FORMAT='JSON') AS
 SELECT TRACE_ID, COLLECT_LIST(AS_MAP(ARRAY['ID','APP','SPAN_ID'], ARRAY[FACT_ID, APP, SPAN_ID])) AS TRACE FROM CHUCK_TRACING GROUP BY TRACE_ID EMIT CHANGES;
