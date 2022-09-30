@@ -1,0 +1,4 @@
+appPort: 38080
+bootstrapServers: broker:29092
+chuckClientId: chuck-java-producer
+chuckTopic: chuck-fact-topic

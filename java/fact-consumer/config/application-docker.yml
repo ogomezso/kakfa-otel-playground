@@ -1,0 +1,5 @@
+bootstrapServers: broker:29092
+chuckClientId: chuck-java-consumer
+chuckGroupId: chuck-fact-cg
+chuckTopic: chuck-fact-topic
+autoOffsetReset: earliest

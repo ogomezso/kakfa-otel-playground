@@ -1,0 +1,5 @@
+bootstrapServers: localhost:9092
+statsClientId: stats-consumer-id
+statsGroupId: stats-consumer-cg
+statsTopic: chuck-stats-topic
+autoOffsetReset: earliest

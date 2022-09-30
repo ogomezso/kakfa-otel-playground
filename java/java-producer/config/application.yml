@@ -1,4 +1,0 @@
-appPort: 38080
-bootstrapServers: localhost:1092
-chuckClientId: chuck-java-producer
-chuckTopic: chuck-java-topic

@@ -20,6 +20,7 @@ After run the env you will have available:
  - Connect API: http://localhost:8083
  - Schema Registry API: http://localhost:8081
  - Control Center: http://localhost:9021
+ - KsqlDB: via Control Center
  - Jaeger UI: http://localhost:16686/
 
 ### Environment Stack
@@ -33,7 +34,8 @@ Docker compose provides:
 1 Kafka Broker
 1 Schema Registry
 1 Kafka Connect suite with `Datagen` and `http-sink` connectors
-1 Control Center  
+1 Control Center
+1 Ksql
 ~~~
 
 #### Open Telemetry Collector
@@ -93,6 +95,62 @@ On the  [Jaeger UI](http://localhost:16686/) you will see that `wordcount-consum
 
 
 > DISCLAIMER: Due the fact that neither Connect or KStreams doesn't store the headers you will see that internal spams will be not correlated as we wished, so we will have splitted traces for production and consume. 
+
+### KsqlDB Queries (Example)
+
+```sql
+CREATE STREAM CHUCK_FACTS_TRACED (
+  id String, timestamp String, 
+  fact String, 
+  traceparent BYTES HEADER('traceparent')
+) WITH (KAFKA_TOPIC='chuck-fact-topic', VALUE_FORMAT='JSON');
+
+SELECT FROM_BYTES(traceparent, 'ascii') as traceId, * FROM CHUCK_DATA_TRACED;
+
+CREATE STREAM CHUCK_STATS_TRACED (
+  id String, 
+  timestamp String, 
+  words int, 
+  chars int,
+  traceparent BYTES HEADER('traceparent')
+) WITH (KAFKA_TOPIC='chuck-stats-topic', VALUE_FORMAT='JSON');
+
+SELECT FROM_BYTES(traceparent, 'ascii') as traceId, * FROM CHUCK_LENGTH_TRACED;
+
+
+CREATE STREAM CHUCK_TRACING (
+	FACT_ID string,
+	TIMESTAMP string,
+	TRACE_ID string,
+	SPAN_ID string,
+	APP string
+) WITH (KAFKA_TOPIC='chuck-trace-topic', VALUE_FORMAT='JSON');
+
+CREATE STREAM CHUCK_FACTS_TRACING WITH (KAFKA_TOPIC='chuck-trace-topic', VALUE_FORMAT='JSON') AS
+SELECT id as FACT_ID,
+	timestamp,
+	SPLIT(FROM_BYTES(traceparent, 'ascii'), '-')[2] as TRACE_ID,
+    SPLIT(FROM_BYTES(traceparent, 'ascii'), '-')[3] as SPAN_ID,
+    'FACTS' as APP
+    FROM CHUCK_FACTS_TRACED;
+
+CREATE STREAM CHUCK_STATS_TRACING WITH (KAFKA_TOPIC='chuck-trace-topic', VALUE_FORMAT='JSON') AS
+SELECT id as FACT_ID,
+	timestamp,
+	SPLIT(FROM_BYTES(traceparent, 'ascii'), '-')[2] as TRACE_ID,
+    SPLIT(FROM_BYTES(traceparent, 'ascii'), '-')[3] as SPAN_ID,
+    'STATS' as APP
+    FROM CHUCK_STATS_TRACED;
+
+
+
+SELECT TRACE_ID, COLLECT_LIST(AS_MAP(ARRAY['ID','APP','SPAN_ID'], ARRAY[FACT_ID, APP, SPAN_ID])) AS TRACE FROM CHUCK_TRACING GROUP BY TRACE_ID EMIT CHANGES;
+
+CREATE TABLE CHUCK_TRACE_TABLE WITH (KAFKA_TOPIC='chuck-trace-table', VALUE_FORMAT='JSON') AS
+SELECT TRACE_ID, COLLECT_LIST(AS_MAP(ARRAY['ID','APP','SPAN_ID'], ARRAY[FACT_ID, APP, SPAN_ID])) AS TRACE FROM CHUCK_TRACING GROUP BY TRACE_ID EMIT CHANGES;
+
+```
+
 
 ### Next Steps
 

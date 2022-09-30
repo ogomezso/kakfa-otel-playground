@@ -1,0 +1,5 @@
+bootstrapServers: broker:29092
+statsClientId: stats-consumer-id
+statsGroupId: stats-consumer-cg
+statsTopic: chuck-stats-topic
+autoOffsetReset: earliest
